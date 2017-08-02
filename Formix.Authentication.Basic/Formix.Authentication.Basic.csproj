@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Jean-Philippe Gravel, P. Eng., PSEM</Authors>
+    <Company>Formix.org</Company>
+    <Description>.NET Core implementation of Basic Authentication</Description>
+    <Copyright>2017, Jean-Philippe Gravel</Copyright>
+    <PackageProjectUrl>https://github.com/formix/BasicAuth</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
