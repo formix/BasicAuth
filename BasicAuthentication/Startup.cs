@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
 using Formix.Authentication.Basic;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BasicAuthentication
 {
@@ -32,11 +33,6 @@ namespace BasicAuthentication
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IPrincipal>(
-                provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
-
             services.AddMvc();
         }
 
@@ -46,7 +42,14 @@ namespace BasicAuthentication
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseBasicAuthentication();
+            app.UseBasicAuthentication(creds =>
+            {
+                if (creds.Username == "jpgravel")
+                {
+                    return new Claim[] { new Claim(ClaimTypes.Name, "jpgravel") };
+                }
+                return null;
+            });
 
             app.UseMvc();
         }

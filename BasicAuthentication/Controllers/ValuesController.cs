@@ -12,18 +12,15 @@ namespace BasicAuthentication.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        private IPrincipal _principal;
-
-        public ValuesController(IPrincipal principal)
+        public ValuesController()
         {
-            _principal = principal;
         }
 
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { _principal.Identity.Name, "value2" };
+            return new string[] { HttpContext.User.Identity.Name, "value2" };
         }
 
         // GET api/values/5
