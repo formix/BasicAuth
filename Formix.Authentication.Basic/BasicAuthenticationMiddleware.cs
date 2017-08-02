@@ -31,6 +31,11 @@ namespace Formix.Authentication.Basic
             }
 
             string headerContent = context.Request.Headers[AUTHORIZATION];
+            if (string.IsNullOrWhiteSpace(headerContent) || headerContent.Length <= 6)
+            {
+                throw new InvalidOperationException("Invalid Authorization header data.");
+            }
+
             var credentials = CreateCredentials(headerContent.Substring(6));
 
             var claims = _authenticate(credentials);
@@ -53,13 +58,12 @@ namespace Formix.Authentication.Basic
         private Credentials CreateCredentials(string base64Credentials)
         {
             byte[] credentialsData = Convert.FromBase64String(base64Credentials);
-            var encoding = Encoding.GetEncoding("iso-8859-1");
-            string credentialString = encoding.GetString(credentialsData);
+            string credentialString = Decode(credentialsData);
             var credentialSplit = credentialString.Split(new[] { ':' }, 2);
 
             if (credentialSplit.Length != 2)
             {
-                throw new InvalidOperationException("Invalid Authorization header data");
+                throw new InvalidOperationException("Invalid Authorization header data.");
             }
 
             return new Credentials()
@@ -67,6 +71,20 @@ namespace Formix.Authentication.Basic
                 Username = credentialSplit[0],
                 Password = credentialSplit[1]
             };
+        }
+
+        private static string Decode(byte[] credentialsData)
+        {
+            try
+            {
+                var encoding = Encoding.GetEncoding("iso-8859-1");
+                string credentialString = encoding.GetString(credentialsData);
+                return credentialString;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unable to decode Authorization header data.", ex);
+            }
         }
     }
 }
