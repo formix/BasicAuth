@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Formix.Authentication.Basic
 {
+    /// <summary>
+    /// Middleware class implementing basic authentication.
+    /// </summary>
     public class BasicAuthenticationMiddleware
     {
         private const string AUTHORIZATION = "Authorization";
@@ -14,6 +17,17 @@ namespace Formix.Authentication.Basic
         private AuthenticateDelegate _authenticate;
         private string _realm;
 
+        /// <summary>
+        /// Constructor of the BasicAuthentication middleware. Saves 
+        /// authentication and realm information for usage during 
+        /// invocation along with the next delegate for the middleware 
+        /// chaining.
+        /// </summary>
+        /// <param name="next">The next request middleware to be executed.</param>
+        /// <param name="authenticate">The authentication method that will do 
+        /// the real stuff.</param>
+        /// <param name="realm">The basic authentication realms. Can be a 
+        /// sentence defining the resources being protected.</param>
         public BasicAuthenticationMiddleware(RequestDelegate next, AuthenticateDelegate authenticate, string realm)
         {
             _next = next;
@@ -21,6 +35,11 @@ namespace Formix.Authentication.Basic
             _realm = realm;
         }
 
+        /// <summary>
+        /// Executes the basic authentication asynchronously.
+        /// </summary>
+        /// <param name="context">The current http context</param>
+        /// <returns>Returns a task for asynchronous execution.</returns>
         public async Task Invoke(HttpContext context)
         {
             if (!context.Request.Headers.ContainsKey(AUTHORIZATION))
