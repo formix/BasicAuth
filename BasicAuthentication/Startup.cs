@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using System.Security.Principal;
+using Formix.Authentication.Basic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BasicAuthentication
 {
@@ -28,6 +32,11 @@ namespace BasicAuthentication
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IPrincipal>(
+                provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
+
             services.AddMvc();
         }
 
@@ -36,6 +45,8 @@ namespace BasicAuthentication
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseBasicAuthentication();
 
             app.UseMvc();
         }

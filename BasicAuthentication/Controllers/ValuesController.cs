@@ -3,17 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Principal;
 
 namespace BasicAuthentication.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private IPrincipal _principal;
+
+        public ValuesController(IPrincipal principal)
+        {
+            _principal = principal;
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { _principal.Identity.Name, "value2" };
         }
 
         // GET api/values/5
