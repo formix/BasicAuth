@@ -8,6 +8,11 @@
     <Description>.NET Core implementation of Basic Authentication</Description>
     <Copyright>2017, Jean-Philippe Gravel</Copyright>
     <PackageProjectUrl>https://github.com/formix/BasicAuth</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/formix/BasicAuth/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/formix/BasicAuth.git</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>ASP NET CORE Authentication</PackageTags>
+    <PackageReleaseNotes>First Realease</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
