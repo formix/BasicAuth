@@ -13,6 +13,9 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>ASP NET CORE Authentication</PackageTags>
     <PackageReleaseNotes>First Realease</PackageReleaseNotes>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
