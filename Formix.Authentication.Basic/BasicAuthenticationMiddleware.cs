@@ -56,6 +56,7 @@ namespace Formix.Authentication.Basic
             }
 
             var credentials = CreateCredentials(headerContent.Substring(6));
+            credentials.RemoteIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress;
 
             var claims = _authenticate(credentials);
             if (claims == null || claims.Length == 0)
@@ -87,6 +88,7 @@ namespace Formix.Authentication.Basic
 
             return new Credentials()
             {
+                Realm = _realm,
                 Username = credentialSplit[0],
                 Password = credentialSplit[1]
             };
