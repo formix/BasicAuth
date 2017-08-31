@@ -11,11 +11,11 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/formix/BasicAuth/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/formix/BasicAuth.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>ASP NET CORE Authentication</PackageTags>
-    <PackageReleaseNotes>First Realease</PackageReleaseNotes>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
+    <PackageTags>ASP NET CORE Basic Authentication</PackageTags>
+    <PackageReleaseNotes>Updated compilation to .Net Core 2.0 and updated dependencies.</PackageReleaseNotes>
+    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <FileVersion>2.0.1.0</FileVersion>
+    <Version>2.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,8 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
