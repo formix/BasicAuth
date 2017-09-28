@@ -9,5 +9,5 @@ namespace Formix.Authentication.Basic
     /// <param name="data">User name and password credentials.</param>
     /// <returns>Returns an array of claims if the authentication worked. 
     /// Returns null if it failed.</returns>
-    public delegate Claim[] AuthenticateDelegate(Credentials data);
+    public delegate ClaimsPrincipal AuthenticateDelegate(Credentials data);
 }

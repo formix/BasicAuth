@@ -39,10 +39,11 @@ namespace BasicAuthentication
             {
                 if (creds.Username == "jpgravel")
                 {
-                    return new Claim[] { new Claim(ClaimTypes.Name, "jpgravel") };
+                    return new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] 
+                    { new Claim(ClaimTypes.Name, "jpgravel")  }, "test") });
                 }
                 return null;
-            });
+            }, "test", 3000);
 
             app.UseMvc();
         }
