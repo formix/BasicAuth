@@ -12,10 +12,11 @@
     <RepositoryUrl>https://github.com/formix/BasicAuth.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>ASP NET CORE Basic Authentication</PackageTags>
-    <PackageReleaseNotes>Updated compilation to .Net Core 2.0 and updated dependencies.</PackageReleaseNotes>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
-    <FileVersion>2.0.1.0</FileVersion>
-    <Version>2.0.1</Version>
+    <PackageReleaseNotes>- Changed AuthenticateDelegate to return a ClaimsPrincipal instead of a list of Claim
+- Implemented punitive failure and purgatory period</PackageReleaseNotes>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

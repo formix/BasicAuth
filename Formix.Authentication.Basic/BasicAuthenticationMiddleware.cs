@@ -20,8 +20,8 @@ namespace Formix.Authentication.Basic
         private RequestDelegate _next;
         private AuthenticateDelegate _authenticate;
         private string _realm;
-        private int _slowFailPeriod;
-        private ISet<IPAddress> _bannedIps;
+        private int _purgatoryPeriod;
+        private ISet<IPAddress> _purgatory;
 
         /// <summary>
         /// Constructor of the BasicAuthentication middleware. Saves 
@@ -34,17 +34,17 @@ namespace Formix.Authentication.Basic
         /// the real stuff.</param>
         /// <param name="realm">The basic authentication realms. Can be a 
         /// sentence defining the resources being protected.</param>
-        /// <param name="slowFailPeriod">How long (ms) the remote ip address 
-        /// has to wait before getting its 403 response. During that period, 
-        /// the remote ip address is banned and all its authentication 
+        /// <param name="purgatoryPeriod">How long (ms) the remote ip address 
+        /// has to wait before getting its 403 response. During that time, 
+        /// the remote ip address is kept in purgatory and its authentication 
         /// requests will fail.</param>
-        public BasicAuthenticationMiddleware(RequestDelegate next, AuthenticateDelegate authenticate, string realm, int slowFailPeriod)
+        public BasicAuthenticationMiddleware(RequestDelegate next, AuthenticateDelegate authenticate, string realm, int purgatoryPeriod)
         {
             _next = next;
             _authenticate = authenticate;
             _realm = realm;
-            _slowFailPeriod = slowFailPeriod;
-            _bannedIps = new HashSet<IPAddress>();
+            _purgatoryPeriod = purgatoryPeriod;
+            _purgatory = new HashSet<IPAddress>();
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace Formix.Authentication.Basic
         public async Task Invoke(HttpContext context)
         {
             var remoteIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress;
-            lock (_bannedIps)
+            lock (_purgatory)
             {
-                if (_bannedIps.Contains(remoteIpAddress))
+                if (_purgatory.Contains(remoteIpAddress))
                 {
                     // Don't want to slowfail further, just deny access.
                     context.Response.StatusCode = 403;
@@ -72,38 +72,51 @@ namespace Formix.Authentication.Basic
                 return;
             }
 
-            string headerContent = context.Request.Headers[AUTHORIZATION];
-            if (string.IsNullOrWhiteSpace(headerContent) || headerContent.Length <= 6)
+            try
             {
-                throw new InvalidOperationException("Invalid Authorization header data.");
+                string headerContent = context.Request.Headers[AUTHORIZATION];
+                if (string.IsNullOrWhiteSpace(headerContent) || headerContent.Length <= 6)
+                {
+                    throw new InvalidOperationException("Invalid Authorization header data.");
+                }
+
+                var credentials = CreateCredentials(headerContent.Substring(6));
+                credentials.RemoteIpAddress = remoteIpAddress;
+
+                var principal = _authenticate(credentials);
+
+                if (principal == null || !principal.Identity.IsAuthenticated)
+                {
+                    // no principal or a non authenticated identity is a failure.
+                    context.Response.StatusCode = 403;
+                    WaitForPurgatory(remoteIpAddress);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(principal.Identity.AuthenticationType))
+                {
+                    throw new InvalidCredentialException("The returned " +
+                        "principal identity do not have an authentication type " +
+                        "defined. You must set a value to " +
+                        "Principal.Identity.AuthenticationType.");
+                }
+
+                // Creates Sets the principal to the HttpContext and the current thread.
+                context.User = principal;
+                if (Thread.CurrentPrincipal != principal)
+                {
+                    Thread.CurrentPrincipal = principal;
+                }
             }
-
-            var credentials = CreateCredentials(headerContent.Substring(6));
-            credentials.RemoteIpAddress = remoteIpAddress;
-
-            var principal = _authenticate(credentials);
-
-            if (principal == null || !principal.Identity.IsAuthenticated)
+            catch (Exception)
             {
-                // no principal or a non authenticated identity is a failure.
-                context.Response.StatusCode = 403;
-                SlowFail(remoteIpAddress);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(principal.Identity.AuthenticationType))
-            {
-                throw new InvalidCredentialException("The returned " +
-                    "principal identity do not have an authentication type " +
-                    "defined. You must set a value to " +
-                    "Principal.Identity.AuthenticationType.");
-            }
-
-            // Creates Sets the principal to the HttpContext and the current thread.
-            context.User = principal;
-            if (Thread.CurrentPrincipal != principal)
-            {
-                Thread.CurrentPrincipal = principal;
+                // Makes sure a smartass don't break the authentication 
+                // process with an invalid request without paying the price.
+                // If the developper is responsible for the error in the 
+                // authentication delegate then... users will pay for it as 
+                // well.
+                WaitForPurgatory(remoteIpAddress);
+                throw;
             }
 
             await _next.Invoke(context);
@@ -142,18 +155,18 @@ namespace Formix.Authentication.Basic
             }
         }
 
-        private void SlowFail(IPAddress remoteIpAddress)
+        private void WaitForPurgatory(IPAddress remoteIpAddress)
         {
-            lock (_bannedIps)
+            lock (_purgatory)
             {
-                _bannedIps.Add(remoteIpAddress);
+                _purgatory.Add(remoteIpAddress);
             }
 
-            Thread.Sleep(_slowFailPeriod);
+            Thread.Sleep(_purgatoryPeriod);
 
-            lock (_bannedIps)
+            lock (_purgatory)
             {
-                _bannedIps.Remove(remoteIpAddress);
+                _purgatory.Remove(remoteIpAddress);
             }
         }
 
