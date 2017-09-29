@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Security.Authentication;
 using System.Security.Claims;
@@ -89,6 +90,8 @@ namespace Formix.Authentication.Basic
                 {
                     // no principal or a non authenticated identity is a failure.
                     context.Response.StatusCode = 403;
+                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(" - 403 FORBIDDEN - "));
+                    context.Response.ContentType = "text/plain";
                     WaitForPurgatory(remoteIpAddress);
                     return;
                 }

@@ -12,10 +12,11 @@
     <RepositoryUrl>https://github.com/formix/BasicAuth.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>ASP NET CORE Basic Authentication</PackageTags>
-    <PackageReleaseNotes>- Changed AuthenticateDelegate to return a ClaimsPrincipal instead of a list of Claim
-- Implemented punitive failure and purgatory period</PackageReleaseNotes>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
+    <PackageReleaseNotes>- (3.0.0) Changed AuthenticateDelegate to return a ClaimsPrincipal instead of a list of Claim
+- (3.0.0) Implemented punitive failure and purgatory period
+- (3.0.1) Added a text body to the 403 response</PackageReleaseNotes>
+    <AssemblyVersion>3.0.1.0</AssemblyVersion>
+    <FileVersion>3.0.1.0</FileVersion>
     <Version>3.0.0</Version>
   </PropertyGroup>
 
