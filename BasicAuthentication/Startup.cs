@@ -37,7 +37,7 @@ namespace BasicAuthentication
 
             app.UseBasicAuthentication(creds =>
             {
-                if (creds.Username == "jpgravel")
+                if (creds.UserName == "jpgravel")
                 {
                     return new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] 
                     { new Claim(ClaimTypes.Name, "jpgravel")  }, "test") });

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace Formix.Authentication.Basic
 {
@@ -7,10 +8,31 @@ namespace Formix.Authentication.Basic
     /// </summary>
     public class Credentials
     {
+
+        /// <summary>
+        /// Creates a Credentials object using the given HttpContext.
+        /// </summary>
+        /// <param name="context"></param>
+        public Credentials(HttpContext context)
+        {
+            Context = context;
+        }
+
+        /// <summary>
+        /// Gets the HttpContext of the received credentials.
+        /// </summary>
+        public HttpContext Context { get; }
+
         /// <summary>
         /// The remote ip address of the connection to authenticate.
         /// </summary>
-        public IPAddress RemoteIpAddress { get; set; }
+        public IPAddress RemoteIpAddress
+        {
+            get
+            {
+                return Context.Request.HttpContext.Connection.RemoteIpAddress;
+            }
+        }
 
         /// <summary>
         /// The realm of the authentication.
@@ -20,7 +42,7 @@ namespace Formix.Authentication.Basic
         /// <summary>
         /// Gets or sets the user name.
         /// </summary>
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// Gets or sets the password.

@@ -81,8 +81,7 @@ namespace Formix.Authentication.Basic
                     throw new InvalidOperationException("Invalid Authorization header data.");
                 }
 
-                var credentials = CreateCredentials(headerContent.Substring(6));
-                credentials.RemoteIpAddress = remoteIpAddress;
+                var credentials = CreateCredentials(headerContent.Substring(6), context);
 
                 var principal = _authenticate(credentials);
 
@@ -125,7 +124,7 @@ namespace Formix.Authentication.Basic
             await _next.Invoke(context);
         }
 
-        private Credentials CreateCredentials(string base64Credentials)
+        private Credentials CreateCredentials(string base64Credentials, HttpContext context)
         {
             byte[] credentialsData = Convert.FromBase64String(base64Credentials);
             string credentialString = Decode(credentialsData);
@@ -136,10 +135,10 @@ namespace Formix.Authentication.Basic
                 throw new InvalidOperationException("Invalid Authorization header data.");
             }
 
-            return new Credentials()
+            return new Credentials(context)
             {
                 Realm = _realm,
-                Username = credentialSplit[0],
+                UserName = credentialSplit[0],
                 Password = credentialSplit[1]
             };
         }
